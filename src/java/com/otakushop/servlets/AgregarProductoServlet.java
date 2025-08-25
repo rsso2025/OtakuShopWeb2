@@ -1,27 +1,30 @@
 package com.otakushop.servlets;
 
+import com.otakushop.dao.Producto;
+import com.otakushop.dao.ProductoDAO;
 import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 public class AgregarProductoServlet extends HttpServlet {
 
+    private ProductoDAO productoDAO = new ProductoDAO();
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String nombre = request.getParameter("nombre");
-        String precio = request.getParameter("precio");
-        String stock = request.getParameter("stock");
+        double precio = Double.parseDouble(request.getParameter("precio"));
+        int stock = Integer.parseInt(request.getParameter("stock"));
 
-        // Por simplicidad, no se conecta a BD, solo envía mensaje
-        request.getSession().setAttribute("mensaje", "Producto '" + nombre + "' agregado correctamente!");
-        response.sendRedirect("bienvenida.jsp");
-    }
+        Producto p = new Producto();
+        p.setNombre(nombre);
+        p.setPrecio(precio);
+        p.setStock(stock);
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.sendRedirect("agregarProducto.html");
+        productoDAO.agregarProducto(p);
+
+        response.sendRedirect("productos.jsp");
     }
 }

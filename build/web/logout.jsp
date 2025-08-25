@@ -1,16 +1,11 @@
 package com.otakushop.servlets;
 
 import com.otakushop.dao.UsuarioDAO;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 public class LoginServlet extends HttpServlet {
-
-    private UsuarioDAO usuarioDAO = new UsuarioDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -19,14 +14,19 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
         boolean valido = usuarioDAO.validarUsuario(email, password);
 
         if (valido) {
-            HttpSession sesion = request.getSession();
-            sesion.setAttribute("email", email);
-            response.sendRedirect("home.jsp"); // PÃ¡gina de inicio
+            // Guardamos la sesión
+            HttpSession session = request.getSession();
+            session.setAttribute("usuario", email);
+
+            // Redirigimos al home.jsp
+            response.sendRedirect("home.jsp");
         } else {
-            request.setAttribute("error", "Usuario o contraseÃ±a incorrectos");
+            // Enviamos mensaje de error al login.jsp
+            request.setAttribute("error", "Usuario o contraseña incorrectos");
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
